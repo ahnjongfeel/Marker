@@ -1,0 +1,144 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="소스 파일">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="헤더 파일">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="리소스 파일">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="include">
+      <UniqueIdentifier>{9860355f-897b-49e1-a6ea-8b68286be47c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\cDib">
+      <UniqueIdentifier>{95453ffb-198b-4718-861a-dde4160ddc55}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="MJ_Marker.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="MJ_MarkerDlg.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="DlgView.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="include\cDib\Dib.h">
+      <Filter>include\cDib</Filter>
+    </ClInclude>
+    <ClInclude Include="include\cDib\DibColor.h">
+      <Filter>include\cDib</Filter>
+    </ClInclude>
+    <ClInclude Include="include\cDib\DibEnhancement.h">
+      <Filter>include\cDib</Filter>
+    </ClInclude>
+    <ClInclude Include="include\cDib\DibFilter.h">
+      <Filter>include\cDib</Filter>
+    </ClInclude>
+    <ClInclude Include="include\cDib\DibFourier.h">
+      <Filter>include\cDib</Filter>
+    </ClInclude>
+    <ClInclude Include="include\cDib\DibSegment.h">
+      <Filter>include\cDib</Filter>
+    </ClInclude>
+    <ClInclude Include="include\cDib\RGBBYTE.h">
+      <Filter>include\cDib</Filter>
+    </ClInclude>
+    <ClInclude Include="include\convenience.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="FileInfo.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="textout.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="MJVT_Security.h">
+      <Filter>소스 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="MJVP_TypeDef.h">
+      <Filter>소스 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="mjvt_tracker.hpp">
+      <Filter>소스 파일</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="MJ_Marker.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="MJ_MarkerDlg.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="DlgView.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="include\cDib\Dib.cpp">
+      <Filter>include\cDib</Filter>
+    </ClCompile>
+    <ClCompile Include="include\cDib\DibBmp.cpp">
+      <Filter>include\cDib</Filter>
+    </ClCompile>
+    <ClCompile Include="include\cDib\DibColor.cpp">
+      <Filter>include\cDib</Filter>
+    </ClCompile>
+    <ClCompile Include="include\cDib\DibEnhancement.cpp">
+      <Filter>include\cDib</Filter>
+    </ClCompile>
+    <ClCompile Include="include\cDib\DibFilter.cpp">
+      <Filter>include\cDib</Filter>
+    </ClCompile>
+    <ClCompile Include="include\cDib\DibFourier.cpp">
+      <Filter>include\cDib</Filter>
+    </ClCompile>
+    <ClCompile Include="include\cDib\DibSegment.cpp">
+      <Filter>include\cDib</Filter>
+    </ClCompile>
+    <ClCompile Include="include\cDib\RGBBYTE.cpp">
+      <Filter>include\cDib</Filter>
+    </ClCompile>
+    <ClCompile Include="include\Convenience.cpp">
+      <Filter>include</Filter>
+    </ClCompile>
+    <ClCompile Include="textout.cpp">
+      <Filter>include</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="MJ_Marker.rc">
+      <Filter>리소스 파일</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\MJ_Marker.rc2">
+      <Filter>리소스 파일</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\MJ_Marker.ico">
+      <Filter>리소스 파일</Filter>
+    </Image>
+  </ItemGroup>
+</Project>

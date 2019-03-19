@@ -2,6 +2,7 @@
 // MJ_MarkerDlg.cpp : 구현 파일
 //
 
+#include "vld.h"
 #include "stdafx.h"
 #include "MJ_Marker.h"
 #include "MJ_MarkerDlg.h"
@@ -98,6 +99,8 @@ BEGIN_MESSAGE_MAP(CMJ_MarkerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_MAKE_SUMIMAGE1, &CMJ_MarkerDlg::OnBnClickedButtonMakeSumimage1)
 	ON_BN_CLICKED(IDC_BUTTON_MAKE_SUMIMAGE3, &CMJ_MarkerDlg::OnBnClickedButtonMakeSumimageQuarter)
 	ON_BN_CLICKED(IDC_BUTTON_MAKE_SUMIMAGE4, &CMJ_MarkerDlg::OnBnClickedButtonMakeSumimage4)
+	ON_BN_CLICKED(IDC_BUTTON_TXT_SUM, &CMJ_MarkerDlg::OnBnClickedButtonTxtSum)
+	ON_BN_CLICKED(IDC_BUTTON_TXT_PIXEL_TO_RATE, &CMJ_MarkerDlg::OnBnClickedButtonTxtPixelToRate)
 END_MESSAGE_MAP()
 
 
@@ -450,6 +453,11 @@ void CMJ_MarkerDlg::readFiles(bool bReadSubDir)
 
 void CMJ_MarkerDlg::initDlg()
 {
+	((CButton*)GetDlgItem(IDC_CHECK_SAVE_ETRI_VERSION))->SetCheck(0);
+	
+
+
+
 	((CButton*)GetDlgItem(IDC_CHECK_SAVECROP))->SetCheck(1);	
 	GetDlgItem(IDC_BUTTON_START)->EnableWindow(0);
 	GetDlgItem(IDC_BUTTON_SAVE)->EnableWindow(0);
@@ -458,8 +466,16 @@ void CMJ_MarkerDlg::initDlg()
 	m_pDlgView->Create(IDD_DLG_VIEW, this);
 	//m_pDlgView->MoveWindow(m_rectCamView[i]);
 	m_pDlgView->ShowWindow(SW_HIDE);
-	//메인창을 왼쪽부로 옮기고, 뷰어창을 메인 오른쪽에다가 둘것
 
+	bool bRet = IsDlgButtonChecked(IDC_CHECK_SAVE_ETRI_VERSION);
+	if (bRet)
+	{
+		m_pDlgView->m_bVersionEtri = 1;
+	}
+
+
+
+	//메인창을 왼쪽부로 옮기고, 뷰어창을 메인 오른쪽에다가 둘것
 	CheckDlgButton(IDC_CHECK_LKT, 0x00);
 	//CheckDlgButton(IDC_CHECK_LOADWHENNOIMAGE, true);
 	//CheckDlgButton(IDC_CHECK_LOADWHENNOIMAGE, true);
@@ -562,9 +578,21 @@ void CMJ_MarkerDlg::getMonitorInfo()
 
 void CMJ_MarkerDlg::OnBnClickedButtonStart()
 {
-	bool bRet = IsDlgButtonChecked(IDC_CHECK_LKT);
-	
+	bool bRetVersionETRI = IsDlgButtonChecked(IDC_CHECK_SAVE_ETRI_VERSION);
+	if (bRetVersionETRI)
+	{
+		m_pDlgView->m_bVersionEtri = 1;
+	}
+	else
+	{
+		m_pDlgView->m_bVersionEtri = 0;
+	}
 
+
+	int trackingID = GetDlgItemInt(IDC_EDIT_TRACK_ID);
+	m_pDlgView->m_iTrackingID = trackingID;
+
+	bool bRet = IsDlgButtonChecked(IDC_CHECK_LKT);	
 	m_pDlgView->m_bTrackingLKT = bRet;
 
 	CRect rectMain;
@@ -1319,7 +1347,6 @@ void CMJ_MarkerDlg::OnBnClickedButtonSave360()
 				circle(cvimage, center, radius, Scalar(0, 255, 0), 3, 8, 0);
 			}*/
 
-
 			imshow("asdf", dst);
 			
 			if (!cvResult2.empty())
@@ -1332,9 +1359,7 @@ void CMJ_MarkerDlg::OnBnClickedButtonSave360()
 				resize(gray, gray_resize, cv::Size(365, 365));
 
 				imwrite(strPathDst.GetBuffer(), gray_resize);
-
 			}
- 			
 			
 			char key = waitKey(1);
 			if (key == 'u')
@@ -1346,13 +1371,10 @@ void CMJ_MarkerDlg::OnBnClickedButtonSave360()
 				m_fRate -= 0.1;
 			}
 
-
 			CString str;
 			str.Format("angle : %d", angle);
 			m_listBox.InsertString(0, str);
 			ProcessWindowMessage();
-
-
 		}
 		CString str;
 		str.Format("save : %.1f%%", ((i - PRE_IMAGE_CNT + 1) / (float)(m_iTotalFile) * 100));
@@ -1370,7 +1392,6 @@ void CMJ_MarkerDlg::OnBnClickedButtonSave360()
 void CMJ_MarkerDlg::OnBnClickedButtonStop()
 {
 	m_bStop = 1;
-
 }
 
 
@@ -1625,10 +1646,15 @@ void CMJ_MarkerDlg::OnBnClickedButtonTxtConvert()
 				CTagRect rect;
 				int _from_id = GetDlgItemInt(IDC_EDIT_FROM);
 				int _to_id = GetDlgItemInt(IDC_EDIT_TO);
+				if (id == _from_id && _to_id == -1)
+				{
+					continue;
+				}
 				if (id == _from_id)
 				{
 					id = _to_id;
 				}
+
 				rect.id = id;
 				rect.rateX = x;
 				rect.rateY = y;
@@ -1636,8 +1662,12 @@ void CMJ_MarkerDlg::OnBnClickedButtonTxtConvert()
 				rect.rateH = h;
 				rect.fimgW = imgW;
 				rect.fimgH = imgH;
-				//transCoordination_yolo_to_monitor(&rect);
+				
 				m_pDlgView->m_vInfo[i].vRect.push_back(rect);
+
+				
+				
+				
 			}
 			fclose(fp_read);
 
@@ -2818,4 +2848,153 @@ void CMJ_MarkerDlg::OnBnClickedButtonMakeSumimage4()
 		m_listBox.InsertString(0, str);
 		ProcessWindowMessage();
 	}
+}
+
+void CMJ_MarkerDlg::GetFileNameWithOutExt(char *src, char* dst)
+{
+	char *pSearchPath;
+
+	pSearchPath = strrchr(src, '\\') + 1;
+
+	pSearchPath[strlen(pSearchPath) - 4] = '\0';
+
+	sprintf(dst, "%s", pSearchPath);
+
+}
+
+
+void CMJ_MarkerDlg::OnBnClickedButtonTxtSum()
+{
+	char szFolderPath[2048] = { 0, };
+	char szPath[2048] = { 0, };
+	GetIniFolderName(szFolderPath);
+
+	
+
+	std::vector<CString> vdata;
+	for (int i = 0; i < m_pDlgView->m_vInfo.size(); i++)
+	{
+		FILE *fp_read = fopen(m_pDlgView->m_vInfo[i].strPathTxt, "rt");
+		if (fp_read)
+		{
+			int id;
+			int trk;
+			float x;
+			float y;
+			float w;
+			float h;
+			char szFrameCount[100];
+			GetFileNameWithOutExt(m_pDlgView->m_vInfo[i].strPathTxt.GetBuffer(), szFrameCount);
+
+			while (fscanf(fp_read, "%d %d %f %f %f %f", &id, &trk, &x, &y, &w, &h) == 6)
+			{
+				CString data;
+				data.Format("%s %d %d %d %d %d %d\n",
+					szFrameCount,
+					id,
+					trk,
+					(int)x,
+					(int)y,
+					(int)w,
+					(int)h);
+				vdata.push_back(data);
+			}
+			fclose(fp_read);
+			fp_read = NULL;
+		}
+	}
+
+	CString strPath;
+	SYSTEMTIME st;
+	GetLocalTime(&st);
+	strPath.Format("%s\\totalTXT%02d%02d%02d.txt", szFolderPath, st.wHour, st.wMinute, st.wSecond);
+
+	FILE *fp_total = fopen(strPath, "wt");
+	for (auto data : vdata)
+	{
+		fprintf(fp_total, "%s", data.GetBuffer());
+	}
+
+	if (fp_total)
+	{
+		fclose(fp_total);
+		fp_total = NULL;
+	}
+
+	
+
+	CString str;
+	str.Format("file save done");
+	m_listBox.InsertString(0, str);
+
+	ShellExecute(NULL, _T("open"), szFolderPath, NULL, NULL, SW_SHOW);
+}
+
+
+void CMJ_MarkerDlg::OnBnClickedButtonTxtPixelToRate()
+{
+	cv::Mat cvmat(1080,1920, CV_8UC3);
+
+	for (int i = 0; i < m_pDlgView->m_vInfo.size(); i++)
+	{
+		FILE *fp_read = fopen(m_pDlgView->m_vInfo[i].strPathTxt, "rt");
+		if (fp_read)
+		{
+			int id;
+			float imgW = m_pDlgView->m_vInfo[i].cvMat.cols;
+			float imgH = m_pDlgView->m_vInfo[i].cvMat.rows;
+			float x;
+			float y;
+			float w;
+			float h;
+			int trk;
+
+			m_pDlgView->m_vInfo[i].vRect.clear();
+			while (fscanf(fp_read, "%d %d %f %f %f %f", &id, &trk, &x, &y, &w, &h) == 6)
+			{
+				CTagRect rect;
+				
+				rect.id = id;
+				rect.left = x - w / 2.;
+				rect.right = x + w / 2.;
+				rect.top = y - h / 2;
+				rect.bottom = y + h / 2;
+				rect.fimgW = cvmat.cols;
+				rect.fimgH = cvmat.rows;
+				m_pDlgView->setRectRate(rect, cvmat);
+				m_pDlgView->m_vInfo[i].vRect.push_back(rect);
+			}
+			fclose(fp_read);
+
+			DeleteFile(m_pDlgView->m_vInfo[i].strPathTxt);
+
+			FILE *fp = fopen(m_pDlgView->m_vInfo[i].strPathTxt, "w+t");
+			if (fp)
+			{
+				for (int j = 0; j < m_pDlgView->m_vInfo[i].vRect.size(); j++)
+				{
+					fprintf(fp, "%d %f %f %f %f\n",
+						m_pDlgView->m_vInfo[i].vRect[j].id,
+						m_pDlgView->m_vInfo[i].vRect[j].rateX,
+						m_pDlgView->m_vInfo[i].vRect[j].rateY,
+						m_pDlgView->m_vInfo[i].vRect[j].rateW,
+						m_pDlgView->m_vInfo[i].vRect[j].rateH);
+				}
+			}
+			if (fp)
+			{
+				fclose(fp);
+			}
+			if (i % 10 == 0)
+			{
+				CString str;
+				str.Format("save : %.1f%%", ((i - PRE_IMAGE_CNT + 1) / (float)(m_iTotalFile)* 100));
+				m_listBox.InsertString(0, str);
+				ProcessWindowMessage();
+			}
+		}
+	}
+	CString str;
+	str.Format("%d file save done", m_iTotalFile - (PRE_IMAGE_CNT + AFT_IMAGE_CNT));
+	m_listBox.InsertString(0, str);
 }

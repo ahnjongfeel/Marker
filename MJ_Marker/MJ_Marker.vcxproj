@@ -80,8 +80,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>../bin</OutDir>
-    <IncludePath>D:\opencv-3.1.0\build\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\opencv-3.1.0\build\lib\Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\opencv-3.1.0\build\include;C:\Program Files %28x86%29\Visual Leak Detector\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\opencv-3.1.0\build\lib\Debug;C:\Program Files (x86)\Visual Leak Detector\lib\Win64;$(LibraryPath)</LibraryPath>
     <TargetName>$(ProjectName)_v7</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

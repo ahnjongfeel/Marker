@@ -94,7 +94,8 @@ public:
 	CDib m_dib;
 	int m_resized_w = 0;
 	int m_resized_h = 0;
-
+	bool m_bVersionEtri = 0;
+	int m_iTrackingID = 0;
 	CRITICAL_SECTION              m_tCritSection_OnPaint;      // critical section to use mutual exclusion.   
 	void csLock(void)
 	{

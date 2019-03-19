@@ -8,6 +8,7 @@ class CTagRect
 {
 public:
 	int id = -1;
+	int trackingID = 0;
 	float left = 0;
 	float right = 0;
 	float top = 0;
@@ -61,6 +62,7 @@ public:
 	std::vector<CTagRect> vRect;
 	std::vector<CTagRect> vRectAdd;
 	int iTagNameIndex=-1;
+	int iTrackingID = 0;
 	bool bVideoGrabMode = 0;
 	bool bFullSizeClassify = 0;
 	

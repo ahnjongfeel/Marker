@@ -211,6 +211,14 @@ void CDlgView::OnPaintOverLap()
 		else
 		{
 			pDC->TextOut(rectTemp.left + 0, rectTemp.top - 17, m_ini.m_vTag[rectTemp.id]);
+			
+			if (m_bVersionEtri)
+			{
+				CString str;
+				str.Format("%s - %d", m_ini.m_vTag[rectTemp.id], rectTemp.trackingID);
+				pDC->TextOut(rectTemp.left + 0, rectTemp.top - 17, str);
+			}
+
 		}
 		
 		
@@ -1361,6 +1369,8 @@ BOOL CDlgView::PreTranslateMessage(MSG* pMsg)
 			if (keyIndex < m_ini.m_vTag.size())
 			{
 				m_vInfo[m_iFileIndex].iTagNameIndex = m_keyIndex = keyIndex;
+				m_vInfo[m_iFileIndex].iTrackingID = m_iTrackingID;
+				
 				if (m_bFullSizeClassify)
 				{
 					setFullSizeClassify();
@@ -1370,6 +1380,7 @@ BOOL CDlgView::PreTranslateMessage(MSG* pMsg)
 				if (m_vRectFix.size() && m_bFixModi)
 				{
 					m_vRectFix.back().id = m_keyIndex = keyIndex;
+					m_vRectFix.back().trackingID = m_iTrackingID;
 					//m_vInfo[m_iFileIndex].iTagNameIndex = m_keyIndex = keyIndex;
 				}
 
@@ -1378,10 +1389,12 @@ BOOL CDlgView::PreTranslateMessage(MSG* pMsg)
 					if (m_iSelectedIndex < m_vInfo[m_iFileIndex].vRect.size())
 					{
 						m_vInfo[m_iFileIndex].vRect[m_iSelectedIndex].id = m_keyIndex;
+						m_vInfo[m_iFileIndex].vRect[m_iSelectedIndex].trackingID = m_iTrackingID;
 					}
 					else
 					{
 						m_vInfo[m_iFileIndex].vRect.back().id = m_keyIndex;
+						m_vInfo[m_iFileIndex].vRect.back().trackingID = m_iTrackingID;
 					}
 
 
@@ -2017,6 +2030,7 @@ void CDlgView::viewImage()
 			if (fp)
 			{
 				int id;
+				int trk;
 				float imgW = m_vInfo[m_iFileIndex].cvMat.cols;
 				float imgH = m_vInfo[m_iFileIndex].cvMat.rows;
 				float x;
@@ -2025,20 +2039,40 @@ void CDlgView::viewImage()
 				float h;
 
 				m_vInfo[m_iFileIndex].vRect.clear();
-				while (fscanf(fp, "%d %f %f %f %f", &id, &x, &y, &w, &h) == 5)
+				if (!m_bVersionEtri)
 				{
-					CTagRect rect;
-					rect.id = id;
-					rect.rateX = x;
-					rect.rateY = y;
-					rect.rateW = w;
-					rect.rateH = h;
-					rect.fimgW = imgW;
-					rect.fimgH = imgH;
-					//transCoordination_yolo_to_monitor(&rect);
-					m_vInfo[m_iFileIndex].vRect.push_back(rect);
-					
-					
+					while (fscanf(fp, "%d %f %f %f %f", &id, &x, &y, &w, &h) == 5)
+					{
+
+						CTagRect rect;
+						rect.id = id;
+						rect.rateX = x;
+						rect.rateY = y;
+						rect.rateW = w;
+						rect.rateH = h;
+						rect.fimgW = imgW;
+						rect.fimgH = imgH;
+						//transCoordination_yolo_to_monitor(&rect);
+						m_vInfo[m_iFileIndex].vRect.push_back(rect);
+					}
+				}
+				else
+				{
+					while (fscanf(fp, "%d %d %f %f %f %f", &id, &trk, &x, &y, &w, &h) == 6)
+					{
+						CTagRect rect;
+						rect.id = id;
+						rect.trackingID = trk;
+						rect.left = x - w / 2.;
+						rect.right = x + w / 2.;
+						rect.top = y - h / 2.;
+						rect.bottom = y + h / 2.;
+						rect.fimgW = imgW;
+						rect.fimgH = imgH;
+						setRectRate(rect, m_vInfo[m_iFileIndex].cvMat);
+						m_vInfo[m_iFileIndex].vRect.push_back(rect);
+					}
+
 				}
 				fclose(fp);
 			}
@@ -2853,6 +2887,7 @@ void CDlgView::OnLButtonUp(UINT nFlags, CPoint point)
 	if (m_bDrawROI)
 	{
 		m_rectMove.id = m_vInfo[m_iFileIndex].iTagNameIndex = m_keyIndex;
+		m_rectMove.trackingID = m_vInfo[m_iFileIndex].iTrackingID = m_iTrackingID;
 		m_rectMove.right = point.x;
 		m_rectMove.bottom = point.y;
 		
@@ -2905,8 +2940,10 @@ void CDlgView::OnLButtonUp(UINT nFlags, CPoint point)
 		m_bDrawROI = false;
 		if (isValidRect(m_rectMove))
 		{
+
 			m_rectTag = m_rectMove;
 			m_rectTagTemp = m_rectTag;
+			m_rectTag.trackingID = m_iTrackingID;
 			
 		}
 		if (isValidRect(m_rectTag) && isValidRect(m_rectMove))
@@ -3023,6 +3060,7 @@ void CDlgView::OnRButtonUp(UINT nFlags, CPoint point)
 	{
 		m_bFixModi = 1;
 		m_rectMoveR.id = m_vInfo[m_iFileIndex].iTagNameIndex = m_keyIndex;
+		m_rectMoveR.trackingID = m_vInfo[m_iFileIndex].iTrackingID = m_iTrackingID;
 		m_rectMoveR.right = point.x;
 		m_rectMoveR.bottom = point.y;
 
@@ -3745,13 +3783,26 @@ void CDlgView::setRectTag()
 			{
 				m_vInfo[m_iFileIndex].vRect[i].id = 0;
 			}
-
-			fprintf(fp, "%d %f %f %f %f\n",
-				m_vInfo[m_iFileIndex].vRect[i].id,
-				m_vInfo[m_iFileIndex].vRect[i].rateX,
-				m_vInfo[m_iFileIndex].vRect[i].rateY,
-				m_vInfo[m_iFileIndex].vRect[i].rateW,
-				m_vInfo[m_iFileIndex].vRect[i].rateH);
+			if (!m_bVersionEtri)
+			{
+				fprintf(fp, "%d %f %f %f %f\n",
+					m_vInfo[m_iFileIndex].vRect[i].id,
+					m_vInfo[m_iFileIndex].vRect[i].rateX,
+					m_vInfo[m_iFileIndex].vRect[i].rateY,
+					m_vInfo[m_iFileIndex].vRect[i].rateW,
+					m_vInfo[m_iFileIndex].vRect[i].rateH);
+			}
+			else
+			{
+				fprintf(fp, "%d %d %d %d %d %d\n",
+					m_vInfo[m_iFileIndex].vRect[i].id,
+					m_vInfo[m_iFileIndex].vRect[i].trackingID,
+					(int)m_vInfo[m_iFileIndex].vRect[i].getCenterX(),
+					(int)m_vInfo[m_iFileIndex].vRect[i].getCenterY(),
+					(int)m_vInfo[m_iFileIndex].vRect[i].getWidth(),
+					(int)m_vInfo[m_iFileIndex].vRect[i].getHeight());
+			}
+			
 		}
 		if (fp)
 		{
@@ -3866,7 +3917,8 @@ void CDlgView::setRectTagAdd(int index)
 
 void CDlgView::setRectID()
 {
-	m_vInfo[m_iFileIndex].rect.id = m_vInfo[m_iFileIndex].iTagNameIndex = m_keyIndex;	
+	m_vInfo[m_iFileIndex].rect.id = m_vInfo[m_iFileIndex].iTagNameIndex = m_keyIndex;
+	m_vInfo[m_iFileIndex].rect.trackingID = m_vInfo[m_iFileIndex].iTrackingID = m_iTrackingID;
 	if (m_vInfo[m_iFileIndex].vRect.size())
 	{
 		//CTagRect rectTemp = m_vInfo[m_iFileIndex].vRect[m_vInfo[m_iFileIndex].vRect.size() - 1];

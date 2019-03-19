@@ -6,6 +6,7 @@
 #pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
 #include "DlgView.h"
 #include "MJVT_Security.h"
+
 #define CONTROL_DISABLE	0
 
 
@@ -131,5 +132,10 @@ public:
 
 	afx_msg void OnBnClickedButtonMakeSumimageQuarter();
 	afx_msg void OnBnClickedButtonMakeSumimage4();
+	afx_msg void OnBnClickedButtonTxtSum();
+
+	void GetFileNameWithOutExt(char *src, char* dst);	
+
+	afx_msg void OnBnClickedButtonTxtPixelToRate();
 };
 
